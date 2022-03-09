@@ -1,0 +1,96 @@
+\usepackage{lmodern, ragged2e, CJKutf8, booktabs, subfig,adjustbox, graphicx, amsmath, amssymb, amsthm, amsfonts, mathtools, multirow,wrapfig,lipsum,tikz, tikz-cd,tikz-3dplot,pgfplots}
+% \usepackage{amsmath, amsthm, amssymb, amsfonts, amsthm, bbold, bm}
+\usepackage[alpine,misc,geometry,electronic]{ifsym}
+\usepackage[style=phys]{biblatex}
+\usepackage[lined,boxed,vlined,ruled,linesnumbered]{algorithm2e}
+\SetKw{Continue}{continue}
+\SetKw{Or}{or}
+\SetKw{Until}{until}
+\addbibresource{bibliography.bib}
+\renewcommand{\footnotesize}{\tiny}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\makeatletter
+\@newctr{footnote}[page]
+\makeatother
+
+\usetheme{CambridgeUS}
+\renewcommand{\raggedright}{\leftskip=0pt \rightskip=0pt plus 0cm}
+
+\definecolor{UQPurple}{RGB}{0, 32, 159}
+% This is the trademark pruple that UQ uses
+\definecolor{UQPurple}{RGB}{81,36,122}
+\newcommand{\hl}[1]{{\textcolor{UQPurple}{#1}}}
+
+% Theme setup
+\titlegraphic{\includegraphics[scale=0.05]{img/UQ_color_logo.png}}
+
+% \makeatletter
+\setbeamertemplate{headline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{palette quaternary}%
+      \insertsectionnavigationhorizontal{\paperwidth}{}{\hskip0pt plus1filll}
+    \end{beamercolorbox}%
+  }
+}
+\setbeamertemplate{footline}{\hspace*{2ex} \insertshortauthor \hfill \textcolor{UQPurple}{\insertshorttitle} \hfill \textbf{\insertframenumber{}} / \inserttotalframenumber \hspace*{2ex}}
+
+\setbeamercolor{item projected}{bg=UQPurple}
+\setbeamertemplate{enumerate items}[default]
+\setbeamercolor*{enumerate item}{fg=UQPurple}
+
+\setbeamertemplate{navigation symbols}{}
+% \setbeamertemplate{footline}[\insertshorttitle frame number]
+\setbeamertemplate{bibliography item}[text]
+\setbeamertemplate{theorems}[numbered]
+
+\setbeamerfont{title}{series = \bfseries, parent = structure}
+\setbeamerfont{frametitle}{series = \bfseries, parent = structure}
+\setbeamerfont{headline}{series = \bfseries, size = \tiny, parent = structure}
+
+\setbeamercolor{title}{fg = white, bg = UQPurple}
+\setbeamercolor{frametitle}{fg = white, bg = UQPurple}
+\setbeamercolor{structure}{fg = UQPurple}
+\setbeamercolor{section in head/foot}{fg = black, bg = UQPurple!40}
+\setbeamercolor{subsection in head/foot}{fg = black, bg = UQPurple!20}
+
+\setbeamercolor{block title}{use=structure,fg=white,bg=structure.fg!75!black}
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=UQPurple!20} %block title.bg!10!bg}
+\makeatletter
+\def\th@mystyle{%
+  \normalfont % body font
+  \setbeamercolor{block title example}{bg=orange,fg=white}
+  \setbeamercolor{block body example}{bg=orange!20,fg=black}
+  \def\inserttheoremblockenv{exampleblock}
+}
+\makeatother
+\theoremstyle{mystyle}
+\newtheorem*{remark}{Remark}
+
+\usepackage{tikz,color,xcolor,amsmath,amsfonts,stmaryrd,amssymb,bm}
+\usepackage{url}
+
+%Just having a look at what it looks like without it
+\setbeamertemplate{background}{\tikz[overlay,remember picture]\node[opacity=0.07]at (current page.center){\includegraphics[width=6cm]{img/UQ_purple_logo.png}};}
+
+
+\newcommand{\maketitleandtoc}{%
+  {%
+      \setbeamertemplate{headline}{}%
+      \setbeamertemplate{footline}{}%
+      \begin{frame}[noframenumbering]%
+        \titlepage%
+      \end{frame}%
+      \begin{frame}[noframenumbering]%
+        \frametitle{Outline}%
+        \tableofcontents%
+      \end{frame}%
+    }}
+
+\newcommand{\noheadfoot}[1]{%
+  {%
+      \setbeamertemplate{headline}{}%
+      \setbeamertemplate{footline}{}%
+      {#1}
+    }
+}
