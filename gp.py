@@ -93,7 +93,8 @@ def sin_eg():
                            Ef+3*stdf, color="#0000FF", alpha=0.1, label="S[f_*]")
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig(os.path.join(os.getcwd(), "img", "sin_eg.png"))
     return
 
 
@@ -139,7 +140,8 @@ def stocks_eg():
                            Ef+3*stdf, color="#0000FF", alpha=0.1, label="S[f_*]")
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    # plt.show()
+    plt.savefig(os.path.join(os.getcwd(), "img", "stock_eg.png"))
     return
 
 

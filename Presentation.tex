@@ -8,7 +8,7 @@
 \input{tecbeamer.tex}
 
 \title{Optimizing Gaussian Processes}  
-\author[Michael Ciccotosto-Camp]{{\bf Honours Research Project}} 
+\author[Michael Ciccotosto-Camp]{{\bf MSS Presentation}} 
 %\institute{}
 \date{
 Michael Ciccotosto-Camp - 44302913 \\
@@ -167,6 +167,28 @@ Michael Ciccotosto-Camp - 44302913 \\
 \section{Gaussian Processes}
 
 \begin{frame}
+    \frametitle{Multi-Variate Gaussian}
+    \[
+        \mathcal{N} \left(
+        \begin{bmatrix}
+                \mu_1  \\
+                \mu_2  \\
+                \mu_3  \\
+                \vdots \\
+                \mu_n  \\
+            \end{bmatrix} ,
+        \begin{bmatrix}
+                \sigma_{1}^2  & \sigma_{12}^2 & \sigma_{13}^2 & \cdots & \sigma_{1n}^2 \\
+                \sigma_{21}^2 & \sigma_{2}^2  & \sigma_{23}^2 & \cdots & \sigma_{2n}^2 \\
+                \sigma_{31}^2 & \sigma_{32}^2 & \sigma_{3}^2  & \cdots & \sigma_{3n}^2 \\
+                \vdots        &               &               & \ddots & \vdots        \\
+                \sigma_{n1}^2 & \sigma_{n2}^2 & \sigma_{n3}^2 & \cdots & \sigma_{nn}^2
+            \end{bmatrix}
+        \right)
+    \]
+\end{frame}
+
+\begin{frame}
     \frametitle{Predictions}
     \begin{itemize}
         \item How do we use our data to make predictions with our kernel function?
@@ -179,32 +201,123 @@ Michael Ciccotosto-Camp - 44302913 \\
 \end{frame}
 
 \begin{frame}
-    \frametitle{Predictions}
+    \[
+        \mathcal{N} \left(
+        \begin{bmatrix}
+                \mu_1  \\
+                \mu_2  \\
+                \mu_3  \\
+                \vdots \\
+                \mu_n  \\
+            \end{bmatrix} ,
+        \begin{bmatrix}
+                \sigma_{11}^2 & \sigma_{12}^2 & \sigma_{13}^2 & \cdots & \sigma_{1n}^2 \\
+                \sigma_{21}^2 & \sigma_{22}^2 & \sigma_{23}^2 & \cdots & \sigma_{2n}^2 \\
+                \sigma_{31}^2 & \sigma_{32}^2 & \sigma_{33}^2 & \cdots & \sigma_{3n}^2 \\
+                \vdots        &               &               & \ddots & \vdots        \\
+                \sigma_{n1}^2 & \sigma_{n2}^2 & \sigma_{n3}^2 & \cdots & \sigma_{nn}^2
+            \end{bmatrix}
+        \right)
+    \]
+    \vspace{1cm}
+    \pause
+    \[
+        \mathcal{N} \left(
+        \begin{bmatrix}
+                y_1    \\
+                y_2    \\
+                \vdots \\
+                y_n    \\
+                ?      \\
+            \end{bmatrix} ,
+        \begin{bmatrix}
+                k (\bm{x}_1,\bm{x}_1)      & k (\bm{x}_1,\bm{x}_2)      & \cdots & k (\bm{x}_1,\bm{x}_n)      & k (\bm{x}_{1},\bm{x}_{\ast})    \\
+                k (\bm{x}_2,\bm{x}_1)      & k (\bm{x}_2,\bm{x}_2)      & \cdots & k (\bm{x}_2,\bm{x}_n)      & k (\bm{x}_{2},\bm{x}_{\ast})    \\
+                \vdots                     &                            & \ddots &                            & \vdots                          \\
+                k (\bm{x}_n,\bm{x}_1)      & k (\bm{x}_n,\bm{x}_2)      & \cdots & k (\bm{x}_n,\bm{x}_n)      & k (\bm{x}_n,\bm{x}_{\ast})      \\
+                k (\bm{x}_{\ast},\bm{x}_1) & k (\bm{x}_{\ast},\bm{x}_2) & \cdots & k (\bm{x}_{\ast},\bm{x}_n) & k (\bm{x}_{\ast},\bm{x}_{\ast})
+            \end{bmatrix}
+        \right)
+    \]
+\end{frame}
+
+\begin{frame}
     \begin{itemize}
-        \item Using the assumption that our data can be modelled as a Gaussian process, we can write out the new distribution of the observed noisy values along the points at which we wish to test the underlying function as
-              \[
-                  \begin{bmatrix}
-                      \bm{y} \\
-                      \bm{y}_{\star}
-                  \end{bmatrix}
-                  \sim \mathbb{N}
-                  \begin{pmatrix}
-                      \bm{0}, &
-                      {
-                              \begin{bmatrix}
-                                  \bm{K_{XX}} + \sigma_n^2 \mathbb{I}_{n \times n} & \bm{K_{X_{\star}X}^{\intercal}} \\
-                                  \bm{K_{X_{\star}X}}                              & \bm{K_{X_{\star}X_{\star}}}
-                              \end{bmatrix}
-                          }
-                  \end{pmatrix}.
-              \]
-              (using the notation $\left( \bm{K}_{\bm{W} \bm{W}'} \right)_{i,j} \triangleq k \left( \bm{w}_i , \bm{w}_j' \right)$)
+        \item How do we compute that missing mean within our MVN from the previous slide?
               \pause
-        \item The mean and covariance can then be computed as
+        \item We can use the following theorem: (Marginals and conditionals of an MVN), suppose $\bm{x} = [ \bm{x}_1, \bm{x}_2 ]$ is jointly Gaussian with parameters
+              \[
+                  \bm{\mu} =
+                  \begin{bmatrix}
+                      \bm{\mu}_1 \\
+                      \bm{\mu}_2
+                  \end{bmatrix}, \quad
+                  \bm{\Sigma} =
+                  \begin{bmatrix}
+                      \bm{\Sigma}_{11} & \bm{\Sigma}_{12} \\
+                      \bm{\Sigma}_{21} & \bm{\Sigma}_{22}
+                  \end{bmatrix}
+              \]
+              then the posterior conditional is given by
               \begin{align*}
-                  \overline{\bm{y}_{\star}}           & = \bm{K_{X_{\star}X}} \left[ \bm{K_{XX}} + \sigma_n^2 \mathbb{I}_{n \times n} \right]^{-1} \bm{y}                                                         \\
-                  \operatorname{cov} (\bm{y}_{\star}) & = \bm{K_{X_{\star}X_{\star}}} - \bm{K_{X_{\star}X}} \left[ \bm{K_{XX}} + \sigma_n^2 \mathbb{I}_{n \times n} \right]^{-1} \bm{K_{X_{\star}X}}^{\intercal}.
+                  \bm{x}_2 \mid \bm{x}_1 & \sim \mathcal{N} \left( \bm{x}_2 \mid \bm{\mu}_{2 \mid 1}, \bm{\Sigma}_{2 \mid 1} \right)  \\
+                  \bm{\mu}_{2 \mid 1}    & = \bm{\mu}_2 + \bm{\Sigma}_{21} \bm{\Sigma}_{11}^{-1} \left( \bm{x}_1 - \bm{\mu}_1 \right) \\
+                  \bm{\Sigma}_{2 \mid 1} & = \bm{\Sigma}_{22} - \bm{\Sigma}_{21} \bm{\Sigma}_{11}^{-1} \bm{\Sigma}_{12}.
               \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \[
+        \mathcal{N} \left(
+        \begin{bmatrix}
+                y_1      \\
+                y_2      \\
+                \vdots   \\
+                y_n      \\
+                y_{\ast} \\
+            \end{bmatrix} ,
+        \begin{bmatrix}
+                k (\bm{x}_1,\bm{x}_1)      & k (\bm{x}_1,\bm{x}_2)      & \cdots & k (\bm{x}_1,\bm{x}_n)      & k (\bm{x}_{1},\bm{x}_{\ast})    \\
+                k (\bm{x}_2,\bm{x}_1)      & k (\bm{x}_2,\bm{x}_2)      & \cdots & k (\bm{x}_2,\bm{x}_n)      & k (\bm{x}_{2},\bm{x}_{\ast})    \\
+                \vdots                     &                            & \ddots &                            & \vdots                          \\
+                k (\bm{x}_n,\bm{x}_1)      & k (\bm{x}_n,\bm{x}_2)      & \cdots & k (\bm{x}_n,\bm{x}_n)      & k (\bm{x}_n,\bm{x}_{\ast})      \\
+                k (\bm{x}_{\ast},\bm{x}_1) & k (\bm{x}_{\ast},\bm{x}_2) & \cdots & k (\bm{x}_{\ast},\bm{x}_n) & k (\bm{x}_{\ast},\bm{x}_{\ast})
+            \end{bmatrix}
+        \right)
+    \]
+    \pause
+    \[
+        \mathcal{N}
+        \begin{pmatrix}
+            {
+                \begin{bmatrix}
+                    \bm{y} \\
+                    y_{\star}
+                \end{bmatrix}
+            }
+            , &
+            {
+                    \begin{bmatrix}
+                        \bm{K_{XX}}         & \bm{K_{X_{\star}X}^{\intercal}} \\
+                        \bm{K_{X_{\star}X}} & k (\bm{x}_{\ast},\bm{x}_{\ast})
+                    \end{bmatrix}
+                }
+        \end{pmatrix}
+    \]
+    \pause
+    \begin{itemize}
+        \item The mean and covariance can then be computed using the theorem from before as
+              \begin{align*}
+                  y_{\star}                           & = \bm{K_{X_{\star}X}} \bm{K_{XX}}^{-1} \bm{y}                                                             \\
+                  \mathbb{V} \left[ y_{\star} \right] & = k (\bm{x}_{\ast},\bm{x}_{\ast}) - \bm{K_{X_{\star}X}} \bm{K_{XX}}^{-1} \bm{K_{X_{\star}X}}^{\intercal}.
+              \end{align*}
+              \pause
+        \item Another way of looking at the prediction is seeing it as a linear combination of $n$ kernel evaluations centered at the input $\bm{x}_{\star}$
+              \[
+                  y_{\star} = \sum_{i=1}^{n} \alpha_i k \left( \bm{x}_i , \bm{x}_{\star} \right)
+              \]
+
     \end{itemize}
 \end{frame}
 
@@ -219,14 +332,14 @@ Michael Ciccotosto-Camp - 44302913 \\
                 \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
 
                 \Input{Observations $\bm{X}, \bm{y}$ and a test input $\bm{x}_{\star}$.}
-                \Output{A prediction $\overline{f_{\star}} $ with its corresponding variance $ \mathbb{V} \left[ f_{\star} \right]$.}
+                \Output{A prediction $y_{\star}$ with its corresponding variance $\mathbb{V} \left[ y_{\star} \right]$.}
                 \BlankLine
-                $\bm{L} = \operatorname{cholesky} \left( \bm{K_{XX}} + \sigma_n^2 \mathbb{I}_{n \times n} \right)$\;
+                $\bm{L} = \operatorname{cholesky} \left( \bm{K_{XX}} \right)$\;
                 $\bm{\alpha} = \operatorname{lin-solve} \left( \bm{L}^{\intercal} , \operatorname{lin-solve} \left( \bm{L}, \bm{y} \right) \right)$\;
-                $\overline{y_{\star}} = \bm{K_{x_{\star} X}} \bm{\alpha}$\;
+                $y_{\star} = \bm{K_{x_{\star} X}} \bm{\alpha}$\;
                 $\bm{v} = \operatorname{lin-solve} \left( \bm{L}, \bm{K_{x_{\star} X}} \right)$\;
-                $\mathbb{V} \left[ f_{\star} \right] = \bm{K_{x_{\star} x_{\star}}} - \bm{v}^{\intercal} \bm{v}$\;
-                \Return{$\overline{f_{\star}} , \mathbb{V} \left[ f_{\star} \right]$}
+                $\mathbb{V} \left[ y_{\star} \right] = k (\bm{x}_{\ast},\bm{x}_{\ast}) - \bm{v}^{\intercal} \bm{v}$\;
+                \Return{$y_{\star} , \mathbb{V} \left[ y_{\star} \right]$}
                 \BlankLine
             \end{algorithm}
         \end{minipage}
@@ -234,143 +347,50 @@ Michael Ciccotosto-Camp - 44302913 \\
     }
 \end{frame}
 
-\begin{frame}
-    \frametitle{Problems with Unoptimized GPR}
-    {\centering
-        \begin{minipage}{.9\linewidth}
-            \begin{algorithm}[H]
-                \caption{Unoptimized GPR}
-                \SetAlgoLined
-                \DontPrintSemicolon
-                \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+\section{Applications}
 
-                \Input{Observations $\bm{X}, \bm{y}$ and a prediction inputs $\bm{x}_{\star}$.}
-                \Output{A prediction $\overline{f_{\star}} $ with its corresponding variance $ \mathbb{V} \left[ f_{\star} \right]$.}
-                \BlankLine
-                \textcolor{red}{$\bm{L} = \operatorname{cholesky} \left( \bm{K_{XX}} + \sigma_n^2 \mathbb{I}_{n \times n} \right)$}\;
-                \textcolor{red}{$\bm{\alpha} = \operatorname{lin-solve} \left( \bm{L}^{\intercal} , \operatorname{lin-solve} \left( \bm{L}, \bm{y} \right) \right)$}\;
-                $\overline{f_{\star}} = \bm{K_{x_{\star} X}} \bm{\alpha}$\;
-                \textcolor{red}{$\bm{v} = \operatorname{lin-solve} \left( \bm{L}, \bm{K_{x_{\star} X}} \right)$}\;
-                $\mathbb{V} \left[ f_{\star} \right] = \bm{K_{x_{\star} x_{\star}}} - \bm{v}^{\intercal} \bm{v}$\;
-                \Return{$\overline{f_{\star}} , \mathbb{V} \left[ f_{\star} \right]$}
-                \BlankLine
-            \end{algorithm}
-        \end{minipage}
-        \par
-    }
-    \begin{itemize}
-        \item \textcolor{red}{Lines 1,2 and 4} can be incredibly slow as computing $\bm{K_{XX}}$ doing a Cholesky decomposition and performing linear solves scale poorly as the number of inputs, $n$, grows.
-    \end{itemize}
+\begin{frame}[fragile]
+    \frametitle{Implementation}
+
+    \begin{minted}{python}
+    def gp_reg_pred(X_train, Y_train, x_pred, sigma):
+        n, d = X_train.shape
+        # Create the Gram matrix corresponding to the training data set.
+        K = exact_kernel(X_train, sigma=sigma)
+        # Noise variance of labels.
+        s = np.var(Y_train.squeeze())
+        L = np.linalg.cholesky(K + s*np.eye(n))
+        # Compute the mean at our test points.
+        Lk = np.linalg.solve(L, exact_kernel(X_train, x_pred, sigma=sigma))
+        Ef = np.dot(Lk.T, np.linalg.solve(L, Y_train))
+        # Compute the variance at our test points.
+        K_ = exact_kernel(x_pred, sigma=sigma)
+        Vf = np.diag(K_) - np.sum(Lk**2, axis=0)
+        return Ef, Vf
+    \end{minted}
+
 \end{frame}
 
-\section{Nystrom}
-
 \begin{frame}
-    \frametitle{Nystrom Approximation}
-    \begin{itemize}
-        \item The Nystrom method we seek a matrix $\bm{Q}\in \mathbb{R}^{n \times k}$ that satisfies $\norm{\bm{A} - \bm{Q} \bm{Q}^{\ast} \bm{A}}_{F} \leq \varepsilon$, where $\bm{A} \in \mathbb{R}^{n \times n}$ is positive semi definite matrix, to form the rank$-k$ approximation
-              \begin{align*}
-                  \onslide<1->{}
-                  \onslide<2->{\bm{A} & \simeq \bm{Q} \bm{Q}^{\ast} \bm{A}                                                                                                                                \\}
-                  \onslide<3->{       & \simeq \bm{Q} \left( \bm{Q}^{\ast} \bm{A} \bm{Q} \right) \bm{Q}^{\ast}                                                                                            \\}
-                  \onslide<4->{       & = \bm{Q} \left( \bm{Q}^{\ast} \bm{A} \bm{Q} \right) \left( \bm{Q}^{\ast} \bm{A} \bm{Q} \right)^{\dagger} \left( \bm{Q}^{\ast} \bm{A} \bm{Q} \right) \bm{Q}^{\ast} \\}
-                  \onslide<5->{       & \simeq \left( \bm{A} \bm{Q} \right) \left( \bm{Q}^{\ast} \bm{A} \bm{Q} \right)^{\dagger} \left( \bm{Q}^{\ast} \bm{A} \right).}
-              \end{align*}
-    \end{itemize}
-\end{frame}
+    \frametitle{$\sin$ Function Prediction with Added Noise}
 
-\section{Random Fourier Features}
-
-\begin{frame}
-    \frametitle{Random Fourier Feature Approximation}
-    \begin{itemize}
-        \item The RFF technique hinges on Bochners theorem which characterises positive definite functions (namely kernels) and states that any positive definite functions can be represented as
-              \[
-                  k \left( \bm{x}, \bm{y} \right) = k \left( \bm{x} - \bm{y} \right) = \int_{\mathbb{C}^d} \exp \left( i \langle \bm{\omega} , \bm{x} - \bm{y} \rangle \right) \mu_k \left( d \bm{\omega} \right)
-              \]
-              where $\mu_k$ is a positive finite measure on the frequencies of $\bm{\omega}$.
-              \pause
-        \item This integral can then be approximated via the following Monte Carlo estimate
-              \begin{align*}
-                  \onslide<1->{}
-                  \onslide<2->{k \left( \bm{x} - \bm{y} \right)
-                                & = \int_{\mathbb{C}^d} \exp \left( i \langle \bm{\omega} , \bm{x} - \bm{y} \rangle \right) p (\bm{\omega}) \; d \bm{\omega}                                                                                                     \\}
-                  \onslide<3->{ & = \mathbb{E}_{\bm{\omega} \sim p (\cdot)} \left( \exp \left( i \langle \bm{\omega} , \bm{x} - \bm{y} \rangle \right) \right)                                                                                                   \\}
-                  \onslide<4->{ & \simeq \frac{1}{D} \sum_{j=1}^{D} \exp \left( i \langle \bm{\omega}_{j} , \bm{x} - \bm{y} \rangle \right)                                                                                                                      \\}
-                  \onslide<5->{ & = \sum_{j=1}^{D} \left( \frac{1}{\sqrt{D}} \exp \left( i \langle \bm{\omega}_{j} , \bm{x} \rangle \right) \right) \overline{\left( \frac{1}{\sqrt{D}} \exp \left( i \langle \bm{\omega}_{j} , \bm{y} \rangle \right) \right) } \\}
-                  \onslide<6->{ & = \langle \varphi (\bm{x}) , \varphi (\bm{y}) \rangle_{\mathbb{C}^D}}
-              \end{align*}
-    \end{itemize}
-\end{frame}
-
-\section{Results}
-
-\begin{frame}
     \begin{figure}
         \centering
-        \subfloat[3D-Spatial network]{
-            \begin{adjustbox}{width=0.31\textwidth}
-                \includegraphics[scale=1]{img/results/nys-sigma=0.1-k=80.png}
-            \end{adjustbox}
-        }
-        \subfloat[Abalone]{
-            \begin{adjustbox}{width=0.31\textwidth}
-                \includegraphics[scale=1]{img/results/nys-sigma=1.0-k=20.png}
-            \end{adjustbox}
-        }
-        \subfloat[Temperature]{
-            \begin{adjustbox}{width=0.31\textwidth}
-                \includegraphics[scale=1]{img/results/nys-sigma=1.0-k=80.png}
-            \end{adjustbox}
-        }
-        \caption{Comparison of Nystrom methods for various datasets.}
-    \end{figure}
-    \begin{figure}
-        \centering
-        \subfloat[3D-Spatial network]{
-            \begin{adjustbox}{width=0.31\textwidth}
-                \includegraphics[scale=1]{img/results/rff-sigma=0.1.png}
-            \end{adjustbox}
-        }
-        \subfloat[Abalone]{
-            \begin{adjustbox}{width=0.31\textwidth}
-                \includegraphics[scale=1]{img/results/rff-sigma=10.0.png}
-            \end{adjustbox}
-        }
-        \subfloat[Wine]{
-            \begin{adjustbox}{width=0.31\textwidth}
-                \includegraphics[scale=1]{img/results/rff-sigma=2.1.png}
-            \end{adjustbox}
-        }
-        \caption{Comparison of RFF methods for various datasets.}
+        \begin{adjustbox}{width=0.9\textwidth}
+            \includegraphics[scale=1]{img/sin_eg.png}
+        \end{adjustbox}
     \end{figure}
 \end{frame}
 
 \begin{frame}
+    \frametitle{Stock Market Prediction}
+
     \begin{figure}
         \centering
-        \subfloat[Frobenius error]{
-            \begin{adjustbox}{width=0.45\textwidth}
-                \includegraphics[scale=1]{img/results/cmp_rel-sigma=0.1-k=80.png}
-            \end{adjustbox}
-        }
-        \subfloat[Infinity error]{
-            \begin{adjustbox}{width=0.45\textwidth}
-                \includegraphics[scale=1]{img/results/cmp_inf-sigma=0.1-k=80.png}
-            \end{adjustbox}
-        }
-        \caption{Comparison between Nystrom and RFF approximations for the 3D-Spatial network data.}
+        \begin{adjustbox}{width=0.9\textwidth}
+            \includegraphics[scale=1]{img/stock_eg.png}
+        \end{adjustbox}
     \end{figure}
-\end{frame}
-
-\section{Moving Forward}
-
-\begin{frame}
-    \frametitle{Moving Forward}
-    \begin{itemize}
-        \item We saw that the Nystrom technique is better at producing approximations of the Gram matrix, $\bm{K}_{\bm{XX}}$, with smaller {\it relative Frobenius errors} while the RFF technique is better at producing approximations with smaller {\it relative infinity errors}. Which is better for GP prediction?
-        \item Recall, the other bottle neck in the GPR algorithm was the Cholesky decomposition. We can employ faster linear system solvers, namely the {\it Conjugate Gradient} (CG) and {\it Minimum Residual} (MINRES) method.
-    \end{itemize}
 \end{frame}
 
 \end{document}

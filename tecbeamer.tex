@@ -1,4 +1,4 @@
-\usepackage{lmodern, ragged2e, CJKutf8, booktabs, subfig,adjustbox, graphicx, amsmath, amssymb, amsthm, amsfonts, mathtools, multirow,wrapfig,lipsum,tikz, tikz-cd,tikz-3dplot,pgfplots}
+\usepackage{lmodern, ragged2e, CJKutf8, booktabs, subfig,adjustbox, graphicx, amsmath, amssymb, amsthm, amsfonts, mathtools, multirow,wrapfig,lipsum,tikz, tikz-cd,tikz-3dplot,pgfplots,minted}
 \usetikzlibrary{shapes.geometric}
 % \usepackage{amsmath, amsthm, amssymb, amsfonts, amsthm, bbold, bm}
 \usepackage[alpine,misc,geometry,electronic]{ifsym}
@@ -25,14 +25,15 @@
 % Theme setup
 \titlegraphic{\includegraphics[scale=0.05]{img/UQ_color_logo.png}}
 
+
 % \makeatletter
 \setbeamertemplate{headline}{%
-  \leavevmode%
-  \hbox{%
-    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{palette quaternary}%
-      \insertsectionnavigationhorizontal{\paperwidth}{}{\hskip0pt plus1filll}
-    \end{beamercolorbox}%
-  }
+    \leavevmode%
+    \hbox{%
+        \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{palette quaternary}%
+            \insertsectionnavigationhorizontal{\paperwidth}{}{\hskip0pt plus1filll}
+        \end{beamercolorbox}%
+    }
 }
 \setbeamertemplate{footline}{\hspace*{2ex} \insertshortauthor \hfill \textcolor{UQPurple}{\insertshorttitle} \hfill \textbf{\insertframenumber{}} / \inserttotalframenumber \hspace*{2ex}}
 
@@ -59,10 +60,10 @@
 \setbeamercolor{block body}{parent=normal text,use=block title,bg=UQPurple!20} %block title.bg!10!bg}
 \makeatletter
 \def\th@mystyle{%
-  \normalfont % body font
-  \setbeamercolor{block title example}{bg=orange,fg=white}
-  \setbeamercolor{block body example}{bg=orange!20,fg=black}
-  \def\inserttheoremblockenv{exampleblock}
+    \normalfont % body font
+    \setbeamercolor{block title example}{bg=orange,fg=white}
+    \setbeamercolor{block body example}{bg=orange!20,fg=black}
+    \def\inserttheoremblockenv{exampleblock}
 }
 \makeatother
 \theoremstyle{mystyle}
@@ -76,22 +77,22 @@
 
 
 \newcommand{\maketitleandtoc}{%
-  {%
-      \setbeamertemplate{headline}{}%
-      \setbeamertemplate{footline}{}%
-      \begin{frame}[noframenumbering]%
-        \titlepage%
-      \end{frame}%
-      \begin{frame}[noframenumbering]%
-        \frametitle{Outline}%
-        \tableofcontents%
-      \end{frame}%
-    }}
+    {%
+            \setbeamertemplate{headline}{}%
+            \setbeamertemplate{footline}{}%
+            \begin{frame}[noframenumbering]%
+                \titlepage%
+            \end{frame}%
+            \begin{frame}[noframenumbering]%
+                \frametitle{Outline}%
+                \tableofcontents%
+            \end{frame}%
+        }}
 
 \newcommand{\noheadfoot}[1]{%
-  {%
-      \setbeamertemplate{headline}{}%
-      \setbeamertemplate{footline}{}%
-      {#1}
-    }
+    {%
+            \setbeamertemplate{headline}{}%
+            \setbeamertemplate{footline}{}%
+            {#1}
+        }
 }
